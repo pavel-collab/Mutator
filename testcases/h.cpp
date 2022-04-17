@@ -6,7 +6,7 @@
 * \param[in] src Source memory
 * \param[in] n copy byte amount
 */
-void memcpy(void *dest, const void *src, size_t n);
+void memcpy(void *dest, const void *src, size_t n); ///< void function
 
 /*!
 * Sum two numbers
