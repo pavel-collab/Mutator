@@ -38,7 +38,7 @@ def _IsLineComment(line):
 * \return the sum of two arguments
 */
 '''
-def Parser(fd_src, fd_dst):
+def Parser(fd_src, fd_dst, loop_num):
     # получаем список строк файла
     src_lines_list = fd_src.read().splitlines()
 
@@ -52,7 +52,10 @@ def Parser(fd_src, fd_dst):
         # если строка содержит комментарий
         if res[1] != None:
             # мутируем комментарий
-            mutated = mutate(res[1])
+            comment_l = res[1]
+            for i in range(loop_num):
+                mutated = mutate(comment_l)
+                comment_l = mutated
 
             # если вся строчка -- комментарий
             if res[0] == None:

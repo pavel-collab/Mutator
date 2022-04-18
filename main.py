@@ -3,11 +3,16 @@ from sys import argv, exit
 import os
 import Mutator
 
+LOOP_NUM = 1
+
 def main():
 
     # можно мутировать заданный файл
     if len(argv) == 2:
         FILE_NAME = argv[1]
+    if len(argv) == 3:
+        FILE_NAME = argv[1]
+        LOOP_NUM = int(argv[2])
         
         # открываем файл и проверям успешность открытия
         fd_src = open(FILE_NAME, 'r')
@@ -20,7 +25,7 @@ def main():
             print("Error open")
             exit(1)
 
-        Mutator.Parser(fd_src, fd_dst)
+        Mutator.Parser(fd_src, fd_dst, LOOP_NUM)
         fd_dst.close()
         fd_src.close()
     # или мутировать все файлы из указанной дериктории (дефолтный режим работы)
@@ -44,7 +49,7 @@ def main():
                 print("Error open")
                 exit(1)
 
-            Mutator.Parser(fd_src, fd_dst)
+            Mutator.Parser(fd_src, fd_dst, LOOP_NUM)
             fd_dst.close()
             fd_src.close()
 
