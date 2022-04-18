@@ -1,10 +1,31 @@
 import re
-import os
-from sys import exit
-import numpy as np
 import random
 
 #! возможно, какие-то места возможно переписать без использования регулярки
+
+# низкоуровневая функция кортеж из двух элементов
+# первый элемент кортежа -- часть строки, не содержащая комментарий
+# второй элемент кортежа -- часть строки, содержащая комментарий
+# если в строке отсутствует какая-либо часть (например вся строка комментарий или строка не содержит комментарий),
+#   на месте ссответствующего элемента кортежа ставится None 
+def _IsLineComment(line):
+    # сразу отсеиваем строки, подозрительные на сожердание комментария
+    match = re.search(r'[*, /]', line)
+
+    # обрабатываем первы случай
+    if (match and (match[0] == '*' or match[0] == '/')):
+        return (None, line)
+    # обрабатываем второй случай
+    elif (line.find('//') != -1):
+        result = re.split(r'//', line)
+        if (result):
+            # в этом случае трока делится на 2 части: подстрока с кодом и подстрока с комментарием
+            # подстроки записываются в список result, так как нам нужна подстрока с комменатрием
+            # вы выбираем result[1]
+            return (str(result[0]), "//" + str(result[1]))
+    else:
+        return (line, None)
+
 
 # основная функция, получающая на вход файл и выдающая список строчек
 # в которых находятся комментарии (или их части)
@@ -17,40 +38,31 @@ import random
 * \return the sum of two arguments
 */
 '''
-def Parser(testcases_dir, file_name):
-    # открываем файл и проверям успешность открытия
-    fd = open(testcases_dir + file_name, 'r')
-    if (fd == -1):
-        print("Error open")
-        exit(1)
-
+def Parser(fd_src, fd_dst):
     # получаем список строк файла
-    lines_list = fd.read().splitlines()
-    # заводим список в котором будут ранится строки комментариев
-    comment_lines = []
+    src_lines_list = fd_src.read().splitlines()
 
     # обрабатываем каждую строку на присутствие в них комментариев
     # принципиально возможно 2 ситуации: 
     # всю строку занимает комментарий (или часть многострочного комментария)
     # строка содержит часть кода и комментарий
-    for line in lines_list:
-        # сразу отсеиваем строки, подозрительные на сожердание комментария
-        match = re.search(r'[*, /]', line)
+    for line in src_lines_list:
+        res = _IsLineComment(line)
 
-        # обрабатываем первы случай
-        if (match and (match[0] == '*' or match[0] == '/')):
-            comment_lines.append(line)
-        # обрабатываем второй случай
-        elif (line.find('//') != -1):
-            result = re.split(r'//', line)
-            if (result):
-                # в этом случае трока делится на 2 части: подстрока с кодом и подстрока с комментарием
-                # подстроки записываются в список result, так как нам нужна подстрока с комменатрием
-                # вы выбираем result[1]
-                comment_lines.append("//" + str(result[1]))
+        # если строка содержит комментарий
+        if res[1] != None:
+            # мутируем комментарий
+            mutated = mutate(res[1])
 
-    fd.close()
-    return comment_lines
+            # если вся строчка -- комментарий
+            if res[0] == None:
+                fd_dst.write(mutated + "\n")
+            # если в строчке помимо комментария есть код
+            else:
+                fd_dst.write(res[0] + mutated + "\n")
+        # если строка не содержит комментарий
+        else:
+            fd_dst.write(res[0] + "\n")
 
 # Функции, мутирующие строчки комментариев
 
@@ -90,5 +102,5 @@ def mutate(s: str) -> str:
         flip_random_character
     ]
     mutator = random.choice(mutators)
-    print(mutator)
+    # print(mutator)
     return mutator(s)

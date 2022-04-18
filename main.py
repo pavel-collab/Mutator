@@ -2,46 +2,31 @@
 from sys import argv, exit
 import os
 import Mutator
-import re
 
 def main():
 
     DIR_NAME = "./testcases/"
-    FILE_NAME = "h.cpp"
-
-    if len(argv) == 2:
-        FILE_NAME = argv[1]
-    if len(argv) == 3:
-        FILE_NAME = argv[1] if argv[1] != '*' else "h.cpp"
-        DIR_NAME = argv[2] if argv[2] != '*' else "./testcases/"
 
     # переменная хранит названия файлов в testcases
     dirfiles = os.listdir(DIR_NAME) 
-    buf = Mutator.Parser(DIR_NAME, FILE_NAME)
 
-    print("Without mutation:")
-    for item in buf:
-        print(item)
+    for file in dirfiles:
+        FILE_NAME = file
 
-    print()
-    print("Mutation -- delete random character:")
-    for item in buf:
-        print(Mutator.delete_random_character(item))
+        # открываем файл и проверям успешность открытия
+        fd_src = open(DIR_NAME + FILE_NAME, 'r')
+        if (fd_src == -1):
+            print("Error open")
+            exit(1)
 
-    print()
-    print("Mutation -- insert random character:")
-    for item in buf:
-        print(Mutator.insert_random_character(item))
+        fd_dst = open("mutated_" + FILE_NAME, 'w')
+        if (fd_dst == -1):
+            print("Error open")
+            exit(1)
 
-    print()
-    print("Mutation -- flip random character:")
-    for item in buf:
-        print(Mutator.flip_random_character(item))
-
-    # print()
-    # print("Mutation random mutation:")
-    # for item in buf:
-    #     print(Mutator.mutate(item))
+        Mutator.Parser(fd_src, fd_dst)
+        fd_dst.close()
+        fd_src.close()
 
 if __name__ == '__main__':
     main()
