@@ -3,16 +3,13 @@ from sys import argv, exit
 import os
 import Mutator
 
-LOOP_NUM = 1
+LOOP_NUM = 50
 
 def main():
 
     # можно мутировать заданный файл
     if len(argv) == 2:
         FILE_NAME = argv[1]
-    if len(argv) == 3:
-        FILE_NAME = argv[1]
-        LOOP_NUM = int(argv[2])
         
         # открываем файл и проверям успешность открытия
         fd_src = open(FILE_NAME, 'r')
