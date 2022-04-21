@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # encoding: utf-8
 """
 Кастомный мутатор для файзера AFL++ написан на основе шаблона кастомного мутатора
@@ -16,6 +16,13 @@ import Mutator
 
 loop_num = 50
 
+COMMANDS = [
+    b"GET",
+    b"PUT",
+    b"DEL",
+    b"AAAAAAAAAAAAAAAAA",
+]
+
 def init(seed):
     """
     Called once when AFLFuzz starts up. Used to seed our RNG.
@@ -26,6 +33,8 @@ def init(seed):
     # Seed our RNG
     random.seed(seed)
 
+def deinit():
+    pass
 
 def fuzz(buf, add_buf, max_size):
     """
@@ -58,7 +67,7 @@ def fuzz(buf, add_buf, max_size):
         mutated = Mutator.mutate(comment_l)
         comment_l = mutated
 
-    ret = bytes(mutated.encode('utf-8'))
+    ret = bytearray(mutated.encode('utf-8'))
 
     # Return data
     return ret
