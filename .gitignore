@@ -2,3 +2,4 @@ doxygen
 __pycache__
 test*
 mutated*
+findings
