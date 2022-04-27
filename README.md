@@ -41,6 +41,44 @@ doxygen main.cpp
 
 ## Запускаем doxygen под файззером
 
+При первом запуске файззера у вас могут возникнуть следующие сообщения ошибки:
+
+```sell
+Hmm, your system is configured to send core dump notifications to an
+external utility. This will cause issues: there will be an extended delay
+between stumbling upon a crash and having this information relayed to the
+fuzzer via the standard waitpid() API.
+If you're just testing, set 'AFL_I_DONT_CARE_ABOUT_MISSING_CRASHES=1'.
+
+To avoid having crashes misinterpreted as timeouts, please log in as root
+and temporarily modify /proc/sys/kernel/core_pattern, like so:
+
+echo core >/proc/sys/kernel/core_pattern
+```
+
+```sell
+Whoops, your system uses on-demand CPU frequency scaling, adjusted
+between 390 and 3906 MHz. Unfortunately, the scaling algorithm in the
+kernel is imperfect and can miss the short-lived processes spawned by
+afl-fuzz. To keep things moving, run these commands as root:
+
+cd /sys/devices/system/cpu
+echo performance | tee cpu*/cpufreq/scaling_governor
+
+You can later go back to the original state by replacing 'performance'
+with 'ondemand' or 'powersave'. If you don't want to change the settings,
+set AFL_SKIP_CPUFREQ to make afl-fuzz skip this check - but expect some
+performance drop.
+```
+
+Вэтом случае, выполните следующие действия:
+```sell
+sudo su
+echo core >/proc/sys/kernel/core_pattern
+cd /sys/devices/system/cpu
+echo performance | tee cpu*/cpufreq/scaling_governor
+```
+
 ### Запуск бинарника без инструментирования
 
 Этот вид файззинга применяется в том случае, если в распоряжении имеется только бинарник целевой программы.

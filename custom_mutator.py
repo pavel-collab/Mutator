@@ -62,12 +62,19 @@ def fuzz(buf, add_buf, max_size):
     кодируем оббратно в массив байт
     '''
     ret = bytearray(buf)
-    comment_l = ret.decode(encoding='utf-8', errors='strict')
-    for i in range(loop_num):
-        mutated = Mutator.mutate(comment_l)
-        comment_l = mutated
-
-    ret = bytearray(mutated.encode('utf-8'))
+    '''
+    в результате некорректного поведения метода decode
+    возможна ситуация, когда будет кидаться исключение
+    для обработки исключения пишем конструкцию try except
+    '''
+    try:
+        comment_l = ret.decode(encoding='utf-8', errors='strict')
+        for i in range(loop_num):
+            mutated = Mutator.mutate(comment_l)
+            comment_l = mutated
+        ret = bytearray(mutated.encode('utf-8'))
+    except UnicodeDecodeError:
+        ret = bytearray(buf)
 
     # Return data
     return ret

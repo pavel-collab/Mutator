@@ -107,3 +107,39 @@ def mutate(s: str) -> str:
     mutator = random.choice(mutators)
     # print(mutator)
     return mutator(s)
+
+
+#---------------------------------------------------------------------------------------------------
+#-------------------------------------мутации байтовых массивов-------------------------------------
+
+def murmur_32_scramble(buf: bytearray) -> bytearray:
+    
+    pos = random.randint(0, len(buf) - 1)
+
+    buf[pos] = (buf[pos] * 0xcc9e2d51) % 255
+    (buf[pos] >> 17) | (buf[pos] << 15)
+    buf[pos] = (buf[pos] * 0x1b873593) % 255
+
+    return buf
+
+def murmur3_32(buf: bytearray) -> bytearray:
+    pos1 = random.randint(0, len(buf) - 1) 
+
+    h = bytearray(b'228322')
+    pos2 = random.randint(0, len(h) - 1) 
+
+    buf[pos1] ^= h[pos2]
+    buf[pos1] ^= murmur_32_scramble(buf)[pos1]
+    buf[pos1] ^= buf[pos1] >> 13    
+
+    return buf
+
+
+def byte_mutate(buf: bytearray) -> bytearray:
+    mutators = [
+        murmur_32_scramble,
+        murmur3_32
+    ]
+    mutator = random.choice(mutators)
+    # print(mutator)
+    return mutator(buf)
